@@ -1,5 +1,5 @@
-# 📚 Internal Documentation (local only — not pushed to GitHub)
-docs/
+# 📚 Uploads (user-uploaded documents)
+uploads/
 
 # Dependencies
 __pycache__/
@@ -37,6 +37,7 @@ desktop.ini
 
 # Vector Store (large files)
 vector_store/
+chroma_data/
 *.faiss
 *.pkl
 
