@@ -84,18 +84,18 @@ The Admin Dashboard provides a web-based interface for system administrators to:
 ## 🔌 Admin API Endpoints
 
 ```
-GET    /api/admin/stats              → Dashboard statistics
-GET    /api/admin/documents          → List all documents
-POST   /api/admin/documents/upload   → Upload new document
-DELETE /api/admin/documents/:id      → Delete a document
-POST   /api/admin/documents/:id/reindex → Re-index a document
-GET    /api/admin/users              → List all users
-PUT    /api/admin/users/:id/role     → Update user role
-GET    /api/admin/analytics/queries  → Query analytics
-GET    /api/admin/analytics/top      → Top questions
-GET    /api/admin/sources            → List data sources
-POST   /api/admin/sources/sync       → Trigger manual sync
-GET    /api/admin/health             → System health check
+GET    /api/v1/admin/stats              → Dashboard statistics
+GET    /api/v1/documents                → List all documents
+POST   /api/v1/documents/upload         → Upload new document
+DELETE /api/v1/documents/:id            → Delete a document
+POST   /api/v1/documents/:id/reindex    → Re-index a document (Future)
+GET    /api/v1/admin/users              → List all users
+PUT    /api/v1/admin/users/:id/role     → Update user role
+GET    /api/v1/admin/analytics/queries  → Query analytics (recent)
+GET    /api/v1/admin/analytics/top      → Top questions
+GET    /api/v1/admin/sources            → List data sources (Future)
+POST   /api/v1/admin/sources/sync       → Trigger manual sync (Future)
+GET    /api/v1/admin/health             → System health check (Use /health)
 ```
 
 ---

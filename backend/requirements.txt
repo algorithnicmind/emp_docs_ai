@@ -50,6 +50,6 @@ python-dotenv==1.0.1
 loguru==0.7.2
 
 # ── Testing ─────────────────────────────────────────────────
-pytest==8.0.0
-pytest-asyncio==0.23.4
-pytest-cov==4.1.0
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0

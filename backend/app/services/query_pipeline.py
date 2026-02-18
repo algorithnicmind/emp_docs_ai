@@ -22,6 +22,7 @@ from app.services.embedding import EmbeddingService
 from app.services.retrieval import VectorStore
 from app.services.generation import LLMGenerator
 from app.services.rbac import RBACService
+from app.services.cache import QueryCache
 from app.config import get_settings
 
 settings = get_settings()
@@ -50,11 +51,13 @@ class QueryPipeline:
         vector_store: VectorStore = None,
         llm_generator: LLMGenerator = None,
         rbac_service: RBACService = None,
+        query_cache: QueryCache = None,
     ):
         self.embedder = embedding_service or EmbeddingService()
         self.store = vector_store or VectorStore()
         self.llm = llm_generator or LLMGenerator()
         self.rbac = rbac_service or RBACService()
+        self.cache = query_cache or QueryCache()
 
     async def process(
         self,
@@ -80,6 +83,14 @@ class QueryPipeline:
         query_id = str(uuid.uuid4())
 
         logger.info(f"Processing query: '{question}' (user={user_id}, role={user_role})")
+
+        # Step 0: Check cache
+        cached = self.cache.get(question, user_role)
+        if cached:
+            cached["query_id"] = query_id
+            cached["cached"] = True
+            logger.info(f"Cache HIT — returning cached result")
+            return cached
 
         # Step 1: Preprocess the query
         cleaned_query = self._preprocess(question)
@@ -133,6 +144,9 @@ class QueryPipeline:
             f"{len(sources)} sources, "
             f"confidence={confidence}"
         )
+
+        # Step 7: Cache the result
+        self.cache.set(question, user_role, result)
 
         return result
 

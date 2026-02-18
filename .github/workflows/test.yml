@@ -1,0 +1,106 @@
+# ============================================================
+# GitHub Actions — CI/CD Pipeline
+# ============================================================
+# Runs tests on every push and pull request.
+# ============================================================
+
+name: Backend Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "backend/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_emp_docs_ai
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: testing
+      DEBUG: false
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres123@localhost:5432/test_emp_docs_ai
+      DATABASE_URL_SYNC: postgresql://postgres:postgres123@localhost:5432/test_emp_docs_ai
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET_KEY: test-secret-key-for-ci
+      OPENAI_API_KEY: sk-test-key-not-real
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov httpx
+
+      - name: Run tests with coverage
+        working-directory: backend
+        run: |
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: backend/coverage.xml
+
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install linting tools
+        run: pip install ruff
+
+      - name: Run linter
+        working-directory: backend
+        run: ruff check app/ --output-format=github
