@@ -11,7 +11,7 @@ from datetime import datetime
 from sqlalchemy import (
     Column, String, Integer, DateTime, Text, ForeignKey, UniqueConstraint
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -21,13 +21,13 @@ class Chunk(Base):
     __tablename__ = "chunks"
 
     id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         primary_key=True,
         default=uuid.uuid4,
         nullable=False,
     )
     document_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("documents.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

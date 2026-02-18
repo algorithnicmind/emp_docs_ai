@@ -10,7 +10,7 @@ from datetime import datetime
 from sqlalchemy import (
     Column, String, Integer, Float, DateTime, Text, ForeignKey
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Uuid, JSON
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -20,20 +20,20 @@ class QueryLog(Base):
     __tablename__ = "query_logs"
 
     id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         primary_key=True,
         default=uuid.uuid4,
         nullable=False,
     )
     user_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("users.id"),
         nullable=True,
         index=True,
     )
     question = Column(Text, nullable=False)
     response = Column(Text, nullable=True)
-    sources_used = Column(JSONB, nullable=True)
+    sources_used = Column(JSON, nullable=True)
     similarity_score = Column(Float, nullable=True)
     response_time_ms = Column(Integer, nullable=True)
     feedback_score = Column(Integer, nullable=True, index=True)  # -1 or 1
