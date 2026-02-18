@@ -1,0 +1,67 @@
+# ============================================================
+# 🐳 Internal Docs Q&A Agent — Docker Compose
+# ============================================================
+# Start:  docker compose up -d
+# Stop:   docker compose down
+# Logs:   docker compose logs
+# Status: docker compose ps
+# ============================================================
+
+version: "3.8"
+
+services:
+  # ─────────────────────────────────────────────
+  # 🗄️ PostgreSQL — Relational Database
+  # ─────────────────────────────────────────────
+  # Stores: Users, Documents metadata, Chunks, Query Logs
+  # Access: localhost:5432
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: emp-postgres
+    environment:
+      POSTGRES_DB: emp_docs_ai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # 🔴 Redis — In-Memory Cache
+  # ─────────────────────────────────────────────
+  # Stores: Query cache, Session data
+  # Access: localhost:6379
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: emp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ─────────────────────────────────────────────
+# 💾 Persistent Volumes
+# ─────────────────────────────────────────────
+# Data survives even when containers are removed
+# Only deleted with: docker compose down -v
+# ─────────────────────────────────────────────
+volumes:
+  pgdata:
+    name: emp_pgdata
+  redisdata:
+    name: emp_redisdata
