@@ -1,0 +1,59 @@
+# 📚 Internal Documentation (local only — not pushed to GitHub)
+docs/
+
+# Dependencies
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+node_modules/
+
+# Environment variables (NEVER commit!)
+.env
+.env.local
+.env.production
+
+# API Keys & Secrets
+*.pem
+*.key
+*.cert
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Database
+*.db
+*.sqlite3
+
+# Vector Store (large files)
+vector_store/
+*.faiss
+*.pkl
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# Test & Coverage
+htmlcov/
+.coverage
+.pytest_cache/
+coverage.xml
+
+# Docker
+docker-compose.override.yml
