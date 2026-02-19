@@ -5,6 +5,7 @@ Generate vector embeddings for text chunks using OpenAI.
 Supports both single and batch embedding with rate-limiting.
 """
 
+import random
 from typing import List
 
 import openai
@@ -24,9 +25,14 @@ class EmbeddingService:
         api_key: str = None,
     ):
         self.model = model or settings.EMBEDDING_MODEL
-        self.client = openai.OpenAI(
-            api_key=api_key or settings.OPENAI_API_KEY
-        )
+        self.api_key = api_key or settings.OPENAI_API_KEY
+        self.is_mock = self.api_key.startswith("sk-dummy")
+        
+        if not self.is_mock:
+            self.client = openai.OpenAI(api_key=self.api_key)
+        else:
+            self.client = None
+            logger.warning("EmbeddingService running in MOCK mode (dummy API key detected).")
 
     def embed_text(self, text: str) -> List[float]:
         """
@@ -38,6 +44,10 @@ class EmbeddingService:
         Returns:
             A list of floats representing the embedding vector.
         """
+        if self.is_mock:
+            # Return random vector for testing without API cost
+            return [random.random() for _ in range(1536)]
+
         try:
             response = self.client.embeddings.create(
                 input=text,
@@ -62,6 +72,10 @@ class EmbeddingService:
         Returns:
             List of embedding vectors.
         """
+        if self.is_mock:
+             # Return random vectors for testing
+             return [[random.random() for _ in range(1536)] for _ in texts]
+
         all_embeddings = []
 
         for i in range(0, len(texts), batch_size):

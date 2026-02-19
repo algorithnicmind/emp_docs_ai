@@ -29,7 +29,14 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await api.post('/auth/login', { email, password });
+      // Use FormData for OAuth2 compatible login
+      const formData = new URLSearchParams();
+      formData.append('username', email); // OAuth2 expects 'username', not 'email'
+      formData.append('password', password);
+
+      const response = await api.post('/auth/login', formData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
       const { token, user } = response.data;
       login(token, user);
       router.push('/dashboard');
@@ -52,14 +59,14 @@ export default function LoginPage() {
     <div className="flex min-h-screen w-full bg-white dark:bg-zinc-950">
       {/* Left Side: Hero / Branding */}
       <div className="hidden lg:flex flex-col justify-center w-1/2 p-12 bg-zinc-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-zinc-900 z-0" />
+        <div className="absolute inset-0 bg-linear-to-br from-indigo-600/20 via-purple-600/20 to-zinc-900 z-0" />
         
         <div className="relative z-10 max-w-lg mx-auto">
           <div className="h-16 w-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 border border-white/20">
             <Brain className="h-8 w-8 text-indigo-400" />
           </div>
           
-          <h1 className="text-4xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70">
+          <h1 className="text-4xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-linear-to-r from-white to-white/70">
             Internal Knowledge, Instantly Accessible
           </h1>
           
