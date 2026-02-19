@@ -36,8 +36,12 @@ export default function LoginPage() {
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         setError('Invalid email or password.');
+      } else if (axios.isAxiosError(err)) {
+        setError(`Login failed: ${err.message}`);
+        console.error('Login error:', err);
       } else {
         setError('Something went wrong. Please try again.');
+        console.error('Unexpected error:', err);
       }
     } finally {
       setLoading(false);
