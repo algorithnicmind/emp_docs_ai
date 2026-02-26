@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (storedToken && storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser) as User;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser(parsedUser);
         // Verify token validity with /me endpoint? Optional for now, axios interceptor handles 401
       } catch (e) {
